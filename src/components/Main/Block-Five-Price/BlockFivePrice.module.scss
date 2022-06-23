@@ -1,0 +1,158 @@
+.block_five_services {
+	height: 1080px;
+}
+
+.block_wrapper {
+	height: 100%;
+
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.services_toggle_list {
+	width: fit-content;
+	margin: 0 auto;
+
+	padding: 10px 25px;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	gap: 15px;
+
+	background: rgba(255, 255, 255, 0.7);
+
+	.services_toggle_item {
+		padding-bottom: 3px;
+
+		font-family: "Oswald";
+		font-style: normal;
+		font-weight: 500;
+		font-size: 32px;
+		line-height: 47px;
+
+		color: #333399;
+
+		border-bottom: 5px solid transparent;
+
+		cursor: pointer;
+	}
+
+	.active_item {
+		border-color: #333399;
+
+		pointer-events: none;
+	}
+}
+
+.services_list_wrapper {
+	height: 100%;
+
+	display: flex;
+	align-items: center;
+}
+
+.services_list {
+	width: 100%;
+
+	display: flex;
+	justify-content: space-between;
+
+	.consultation_default_list,
+	.consultation_extended_list {
+		opacity: 1;
+		transition: opacity 2s ease-in-out;
+	}
+
+	.consultation_default_list {
+		width: 100%;
+
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.consultation_extended_list {
+		width: 100%;
+		
+		display: flex;
+		justify-content: space-evenly;
+	}
+
+	.services_item {
+		width: 437px;
+		height: 550px;
+
+		padding: 60px 40px;
+
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		align-items: center;
+
+		background: rgba(255, 255, 255, 0.7);
+		box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
+
+		border: 2px solid #333399;
+		outline: 15px solid rgba(255, 255, 255, 0.7);
+		outline-offset: 2px;
+
+		transition: transform .2s linear;
+
+		.services_item_heading {
+			font-family: "Oswald", sans-serif;
+			font-style: normal;
+			font-weight: 600;
+			font-size: 40px;
+			line-height: 59px;
+			text-align: center;
+
+			color: #333399;
+		}
+
+		.services_item_description {
+			font-family: "Montserrat", sans-serif;
+			font-style: normal;
+			font-weight: 300;
+			font-size: 35px;
+			line-height: 43px;
+			text-align: center;
+
+			color: #333399;
+		}
+
+		.services_item_price {
+			padding: 20px 30px;
+
+			font-family: "Oswald", sans-serif;
+			font-style: normal;
+			font-weight: 500;
+			font-size: 32px;
+			line-height: 47px;
+			text-align: center;
+
+			color: #333399;
+
+			border: 2px solid #333399;
+			border-radius: 10px;
+
+			cursor: pointer;
+		}
+		.services_item_price:hover {
+			background: rgba(51, 51, 153, 0.9);
+			color: white;
+		}
+	}
+	.services_item:hover {
+		transform: scale(1.05);
+	}
+}
+
+.opacity_0 {
+	opacity: 0;
+}
+
+.opacity_1 {
+	opacity: 1;
+}

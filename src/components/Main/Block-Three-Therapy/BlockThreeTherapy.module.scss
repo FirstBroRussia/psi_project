@@ -1,0 +1,123 @@
+$perspective: 1000px;
+$translateZ: 100px;
+$scaleForAxisZ: 1 + ($translateZ * (-1) / $perspective);
+
+
+@mixin item_content {
+	width: 454px;
+	height: 580px;
+
+	padding: 70px 5px;
+
+	background: rgba(255, 255, 255, 0.7);
+	box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+}
+
+.block_three_therapy {
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
+
+	height: 1080px;
+}
+
+.block_wrapper {
+	height: 100%;
+}
+
+.therapy_list {
+	height: 100%;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.therapy_item {
+	// width: 454px;
+	// height: 580px;
+
+	// padding: 70px 5px;
+
+	position: relative;
+
+	// background: rgba(255, 255, 255, 0.7);
+	// box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+
+	transform-style: preserve-3d;
+	perspective: $perspective;
+}
+.therapy_item:hover {
+	.card_front {
+		transform: rotateY(180deg);
+	}
+
+	.card_back {
+		transform: rotateY(360deg);
+	}
+}
+
+.card_inner {
+	transform: translateZ($translateZ) scale($scaleForAxisZ);
+	backface-visibility: hidden;
+}
+
+.card_front,
+.card_back {
+	transition: transform 0.7s ease-in-out;
+
+	transform-style: preserve-3d;
+
+	backface-visibility: hidden;
+}
+
+.card_front {
+	@include item_content;
+
+	transform: rotateY(0deg);
+
+	.item_heading {
+		font-family: "Oswald", sans-serif;
+		font-style: normal;
+		font-weight: 600;
+		font-size: 50px;
+		line-height: 74px;
+		text-align: center;
+
+		color: #333399;
+	}
+}
+
+.card_back {
+	position: absolute;
+	z-index: -1;
+
+	width: 100%;
+	height: 100%;
+
+	top: 0;
+	left: 0;
+
+	@include item_content;
+	justify-content: center;
+
+	transform: rotateY(180deg);
+
+	.item_description {
+		font-family: "Montserrat", sans-serif;
+		font-style: normal;
+		font-weight: 500;
+		font-size: 34px;
+		line-height: 41px;
+		text-align: center;
+
+		color: #333399;
+
+		text-shadow: 10px 10px 10px rgba(51, 51, 153, 0.25);
+	}
+}

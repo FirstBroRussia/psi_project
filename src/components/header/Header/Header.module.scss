@@ -1,0 +1,37 @@
+$header_height: 90px;
+
+.header {
+	height: $header_height;
+
+	background: rgba(255, 255, 255, 0.8);
+
+	position: fixed;
+	max-width: 1920px;
+	width: 100%;
+	
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+
+	z-index: 1;
+}
+
+.wrapper {
+	width: auto;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.sandwich {
+	display: none;
+}
+
+@media (max-width: 1439px) {
+	.sandwich {
+		display: block;
+	}
+
+
+}

@@ -1,0 +1,162 @@
+@mixin generalTransition {
+	transition: all 0.5s ease-in-out;
+}
+
+.block_four_ask_problem {
+	height: 1080px;
+
+	position: relative;
+
+	overflow: hidden;
+
+	max-height: 1080px;
+	min-height: 768px;
+}
+
+.block_wrapper {
+	display: flex;
+	flex-direction: column;
+
+	height: 100%;
+}
+
+.problems_list_wrapper {
+	height: 100%;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	
+}
+
+.problems_list {
+	width: fit-content;
+
+	padding: 30px 40px;
+
+	position: relative;
+
+	display: flex;
+	flex-direction: column;
+	gap: 50px;
+
+	background: rgba(255, 255, 255, 0.7);
+
+
+	.problem_item {
+		width: fit-content;
+
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 55px;
+
+		cursor: pointer;
+
+		.heading_wrapper {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 25px;
+
+			.plus_icon_svg {
+				@include generalTransition;
+			}
+
+			.item_heading {
+				border-bottom: 3px solid transparent;
+
+				font-family: "Oswald", sans-serif;
+				font-style: normal;
+				font-weight: 400;
+				font-size: 55px;
+				line-height: 82px;
+
+				color: #333399;
+			}
+		}
+	}
+	.heading_wrapper:hover {
+		.item_heading {
+			border-color: #333399;
+		}
+	}
+}
+
+.item_description_list {
+	display: none;
+}
+
+$leftMargin: -12px - 15px;
+
+.description_list_item {
+	position: relative;
+
+	margin-left: -$leftMargin;
+
+	font-family: "Montserrat", sans-serif;
+	font-style: normal;
+	font-weight: 400;
+	font-size: 37px;
+	line-height: 45px;
+	display: flex;
+	align-items: center;
+
+	color: #333399;
+}
+.description_list_item::before {
+	position: absolute;
+
+	content: "";
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+
+	background: #333399;
+
+	top: 50%;
+	transform: translateY(-50%);
+	left: $leftMargin;
+}
+
+.video_background {
+	position: absolute;
+	z-index: -1;
+
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+
+	@include generalTransition;
+}
+.visible_video {
+	opacity: 1;
+}
+.hidden_video {
+	opacity: 0;
+}
+
+
+.open_list {
+	.problem_item:not(.problem_item.open_item) {
+		display: none;
+	}
+
+	.problem_item.open_item {
+
+		.plus_icon_svg {
+			transform: rotate(45deg);
+		}
+
+		.item_description_list {
+			padding: 10px;
+
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: flex-start;
+			gap: 10px;
+		}
+	}
+
+}

@@ -1,0 +1,39 @@
+@import '../../../styles/variable.scss';
+
+$reviewsSwiperPaddingHorizontal: 15px;
+
+.block_six_reviews {
+	height: 1080px;
+
+	position: relative;
+}
+
+.block_wrapper {
+	width: 100%;
+	height: calc(100% - $paddingWrapper);
+	
+	position: relative;
+}
+
+.reviews_swiper_wrapper {
+	width: 100%;
+	height: 100%;
+
+	position: relative;
+}
+
+.reviews_swiper {
+	width: 1920px - ($reviewsSwiperPaddingHorizontal * 2);
+	height: 100%;
+
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+@media (max-width: 1919px) {
+	.reviews_swiper {
+		width: 96vw;
+	}
+}
