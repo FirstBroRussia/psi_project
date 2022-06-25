@@ -10,6 +10,18 @@
 	align-items: center;
 	gap: 20px;
 }
+.navigation_list_hover {
+	.navigation_item:hover {
+		height: 45px;
+	border-bottom: 3px solid #333399;
+	}
+}
+.navigation_list_active {
+	.navigation_item:active {
+		height: 45px;
+		border-bottom: 3px solid #333399;
+	}
+}
 
 .navigation_item {
 	height: 45px;
@@ -21,11 +33,6 @@
 	line-height: 34px;
 
 	color: #333399;
-}
-
-.navigation_item:hover {
-	height: 45px;
-	border-bottom: 3px solid #333399;
 }
 
 .navigation_item:active {

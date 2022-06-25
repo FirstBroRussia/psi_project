@@ -1,7 +1,13 @@
+import styles from './Logo.module.scss';
+
 export default function Logo({width, height}) {
+	const logoClickHandler = () => {
+		window.scrollTo(0, 0);
+	};
+	
   return (
-    <a href="#" className="logo_link">
-      <svg
+    <a onClick={logoClickHandler} href="" className="logo_link">
+      <svg className={styles.logo}
         width={width}
         height={height}
         viewBox="0 0 292 73"

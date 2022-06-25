@@ -1,37 +1,34 @@
-import React from "react";
-import Header from "./components/header/Header/Header";
-import Logo from "./components/header/Logo";
-import Navbar from "./components/header/Navbar/Navbar";
-import Main from "./components/Main/Main";
-import SocialNetworkList from "./components/Social-Network-List/SocialNetworkList";
+import React, { useEffect, useRef } from "react";
+import { BrowserRouter } from "react-router-dom";
+import { Routes, Route } from "react-router";
 
-import styles from './styles/App.module.scss';
+import styles from "./styles/App.module.scss";
+
+import Header from "./components/header/Header/Header";
+import Main from "./components/Main/Main";
+import Footer from "./components/Footer/Footer";
+import ScrollUpButton from "./utils/ScrollUpButton/ScrollUpButton";
+
+let init = false;
 
 function App() {
+  const mainWrapperRef = useRef(null);
+
+  useEffect(() => {
+    if (!init) {
+      new ScrollUpButton(mainWrapperRef.current);
+      init = true;
+    }
+  }, []);
+
   return (
-    <div className={styles.main_container}>
-      <Header />
-      <Main />
-      <footer className="footer">
-        <div className="navbar_wrapper">
-          <Navbar />
-        </div>
-        <div className="content_wrapper">
-          <div className="social_network_wrapper">
-            <SocialNetworkList width="35" />
-          </div>
-          <div className="logo_wrapper">
-            <Logo width="300" height="80" />
-          </div>
-          <ul className="copyright_list">
-            <li className="copyright_item year">2022</li>
-            <li className="copyright_item privacy">
-              Политика конфиденциальности
-            </li>
-          </ul>
-        </div>
-      </footer>
-    </div>
+    <BrowserRouter>
+      <div ref={mainWrapperRef} className={styles.main_container}>
+        <Header />
+        <Main />
+        <Footer />
+      </div>
+    </BrowserRouter>
   );
 }
 

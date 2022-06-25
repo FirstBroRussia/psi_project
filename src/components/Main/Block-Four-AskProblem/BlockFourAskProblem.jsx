@@ -1,9 +1,10 @@
-import Image from "next/image";
 import React, {useState, useRef} from "react";
+import {useSelector} from 'react-redux';
 
 import styles from "./BlockFourAskProblem.module.scss";
 
-import plusSvg from "../../../public/image/block-four-ask-problem/plus-icon.svg";
+import plusSvg from "../../../content/image/block-four-ask-problem/plus-icon.svg";
+import { DeviceTypeList } from "../../../utils/utils";
 
 const videoNull = `#`;
 
@@ -15,18 +16,18 @@ const askProblemsItems = {
 };
 
 const videoList = {
-  moodVideoHorizontal: require("../../../public/video/help-block/mood-video/compress/mood-horizontal.mp4"),
-  moodVideoVertical: require("../../../public/video/help-block/mood-video/compress/mood-vertical.mp4"),
-  targetVideoHorizontal: require('../../../public/video/help-block/target-video/compress/target-horizontal.mp4'),
-  targetVideoVertical: require('../../../public/video/help-block/target-video/compress/target-vertical.mp4'),
-  behaviorVideoHorizontal: require('../../../public/video/help-block/behavior-video/compress/behavior-horizontal.mp4'),
-  behaviorVideoVertical: require('../../../public/video/help-block/behavior-video/compress/behavior-vertical.mp4'),
-  otherVideoHorizontal: require('../../../public/video/help-block/other-video/compress/other-horizontal.mp4'),
-  otherVideoVertical: require('../../../public/video/help-block/other-video/compress/other-vertical.mp4'),
+  moodVideoHorizontal: require("../../../content/video/help-block/mood-video/compress/mood-horizontal.mp4"),
+  moodVideoVertical: require("../../../content/video/help-block/mood-video/compress/mood-vertical.mp4"),
+  targetVideoHorizontal: require('../../../content/video/help-block/target-video/compress/target-horizontal.mp4'),
+  targetVideoVertical: require('../../../content/video/help-block/target-video/compress/target-vertical.mp4'),
+  behaviorVideoHorizontal: require('../../../content/video/help-block/behavior-video/compress/behavior-horizontal.mp4'),
+  behaviorVideoVertical: require('../../../content/video/help-block/behavior-video/compress/behavior-vertical.mp4'),
+  otherVideoHorizontal: require('../../../content/video/help-block/other-video/compress/other-horizontal.mp4'),
+  otherVideoVertical: require('../../../content/video/help-block/other-video/compress/other-vertical.mp4'),
 };
 
-export default function BlockFourAskProblem({store}) {
-	console.log(store);
+export default function BlockFourAskProblem() {
+  const deviceType = useSelector((state) => state.reducer.typeUserDevice);
   const currentOpenListRef = useRef(null);
   const [isOpenList, setIsOpenList] = useState(false);
   const [currentVideo, setCurrentVideo] = useState(videoNull);
@@ -69,15 +70,14 @@ export default function BlockFourAskProblem({store}) {
   };
 
   return (
-    <article className={`gradient_background ${styles.block_four_ask_problem}`}>
-      <div className="container_wrapper padding_wrapper">
-        <div className={styles.block_wrapper}>
+    <article className={`${styles.block_four_ask_problem} gradient_background padding_wrapper`}>
+        <div className={`${styles.block_wrapper} container_wrapper`}>
           <h2 className="h2">С чем я могу вам помочь</h2>
           <div ref={listWrapperRef} className={styles.problems_list_wrapper}>
             <ul
 	      ref={listElementRef}
               onClick={askProblemsListClickHandler}
-              className={`${styles.problems_list} ${isOpenList ? `${styles.open_list}` : ''}`}
+              className={`${styles.problems_list} ${isOpenList ? `${styles.open_list}` : ''} ${deviceType === DeviceTypeList.Desktop ? `${styles.problems_list_hover}` : `${styles.problems_list_active}`}`}
             >
               <li
                 data-item={askProblemsItems.Mood}
@@ -85,7 +85,7 @@ export default function BlockFourAskProblem({store}) {
               >
                 <div className={styles.heading_wrapper}>
                   <div className={styles.plus_icon_svg}>
-                    <Image src={plusSvg} alt="Иконка плюс-крестик" />
+                    <img src={plusSvg} alt="Иконка плюс-крестик" />
                   </div>
                   <h3 className={`h3 ${styles.item_heading}`}>
                     Проблемы с настроением
@@ -115,7 +115,7 @@ export default function BlockFourAskProblem({store}) {
               >
                 <div className={styles.heading_wrapper}>
                   <div className={styles.plus_icon_svg}>
-                    <Image src={plusSvg} alt="Иконка плюс-крестик" />
+                    <img src={plusSvg} alt="Иконка плюс-крестик" />
                   </div>
                   <h3 className={`h3 ${styles.item_heading}`}>
                     Сложности постановки и достижения целей
@@ -145,7 +145,7 @@ export default function BlockFourAskProblem({store}) {
               >
                 <div className={styles.heading_wrapper}>
                   <div className={styles.plus_icon_svg}>
-                    <Image src={plusSvg} alt="Иконка плюс-крестик" />
+                    <img src={plusSvg} alt="Иконка плюс-крестик" />
                   </div>
                   <h3 className={`h3 ${styles.item_heading}`}>
                     Нежелательное поведение
@@ -172,7 +172,7 @@ export default function BlockFourAskProblem({store}) {
               >
                 <div className={styles.heading_wrapper}>
                   <div className={styles.plus_icon_svg}>
-                    <Image src={plusSvg} alt="Иконка плюс-крестик" />
+                    <img src={plusSvg} alt="Иконка плюс-крестик" />
                   </div>
                   <h3 className={`h3 ${styles.item_heading}`}>
                     Другие проблемы
@@ -194,7 +194,6 @@ export default function BlockFourAskProblem({store}) {
             </ul>
           </div>
         </div>
-      </div>
       <video src={currentVideo} className={`${styles.video_background} ${isOpenList ? `${styles.visible_video}` : `${styles.hidden_video}`}`} autoPlay loop />
     </article>
   );

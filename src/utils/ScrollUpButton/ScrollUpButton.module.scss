@@ -1,0 +1,17 @@
+.scroll_up_button {
+	position: fixed;
+
+	right: 30px;
+	bottom: 30px;
+
+	width: fit-content;
+
+	cursor: pointer;
+}
+
+@media (max-width: 968px) {
+	.scroll_up_button {
+		right: 20px;
+	        bottom: 20px;
+	}
+}

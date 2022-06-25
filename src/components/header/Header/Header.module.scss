@@ -5,6 +5,8 @@ $header_height: 90px;
 
 	background: rgba(255, 255, 255, 0.8);
 
+	padding: 0 15px;
+
 	position: fixed;
 	max-width: 1920px;
 	width: 100%;
@@ -28,10 +30,10 @@ $header_height: 90px;
 	display: none;
 }
 
-@media (max-width: 1439px) {
-	.sandwich {
-		display: block;
-	}
+// @media (max-width: 1439px) {
+// 	.sandwich {
+// 		display: block;
+// 	}
 
 
-}
+// }

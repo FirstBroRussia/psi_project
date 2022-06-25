@@ -45,12 +45,8 @@ $arrowBottom: 70px;
 	transform: translateX(-50%);
 
 	transition: transform 0.2 ease-in-out;
-}
 
-.arrow_wrapper:hover {
-	.arrow_link {
-		bottom: $arrowBottom - 10px;
-	}
+	animation: arrow_animate 1s ease-in-out infinite;
 }
 
 .video_background {
@@ -62,30 +58,12 @@ $arrowBottom: 70px;
 	z-index: -1;
 }
 
-// @media (min-width: 1680px) and (max-width: 1919px) {
-// 	.description {
-// 		font-size: 52px;
-// 		line-height: 68px;
-// 	}
-// }
+@keyframes arrow_animate {
+	to {
+		bottom: $arrowBottom - 20px;
+	}
 
-// @media (min-width: 1440px) and (max-width: 1679px) {
-// 	.description {
-// 		font-size: 46px;
-// 		line-height: 58px;
-// 	}
-// }
-
-// @media (min-width: 1280px) and (max-width: 1439px) {
-// 	.description {
-// 		font-size: 40px;
-// 		line-height: 50px;
-// 	}
-// }
-
-// @media (min-width: 1280px) and (max-width: 1439px) {
-// 	.description {
-// 		font-size: 40px;
-// 		line-height: 50px;
-// 	}
-// }
+	from {
+		bottom: $arrowBottom;
+	}
+}

@@ -28,6 +28,9 @@ $scaleForAxisZ: 1 + ($translateZ * (-1) / $perspective);
 
 .block_wrapper {
 	height: 100%;
+
+	display: flex;
+	flex-direction: column;
 }
 
 .therapy_list {

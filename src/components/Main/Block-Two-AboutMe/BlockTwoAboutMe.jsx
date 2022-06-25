@@ -1,14 +1,13 @@
-import Image from "next/image";
 import React from "react";
 
 import styles from "./BlockTwoAboutMe.module.scss";
 
-import mainImage from "../../../public/image/block-two-about-me/main-photo.jpg";
+import mainImage from "../../../content/image/block-two-about-me/main-photo.jpg";
 
 export default function BlockTwoAboutMe() {
   return (
-    <article className={`gradient_background ${styles.block_two_about_me}`}>
-      <div className="container_wrapper padding_wrapper">
+    <article className={`${styles.block_two_about_me} gradient_background padding_wrapper`} id='block_two_about_me' >
+      <div className="container_wrapper ">
         <div className={styles.block_wrapper}>
           <div className={styles.info_wrapper}>
             <h2 className="h2">Анастасия Судакова</h2>
@@ -36,10 +35,10 @@ export default function BlockTwoAboutMe() {
           </div>
           <div className={styles.image_wrapper}>
             <div className={styles.first_image}>
-              <Image src={mainImage} alt="Фото психолога верхнее" />
+              <img src={mainImage} alt="Фото психолога верхнее" />
             </div>
             <div className={styles.second_image}>
-              <Image src={mainImage} alt="Фото психолога нижнее" />
+              <img src={mainImage} alt="Фото психолога нижнее" />
             </div>
           </div>
         </div>

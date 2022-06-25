@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import styles from './BlockOnePromo.module.scss';
 
-const video = require('../../../public/video/main-video.mp4');
+const video = require('../../../content/video/main-video.mp4');
 
 export default function VideoPromo() {
 	const videoRef = useRef(null);

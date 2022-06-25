@@ -76,10 +76,23 @@
 			}
 		}
 	}
-	.heading_wrapper:hover {
-		.item_heading {
-			border-color: #333399;
-		}
+}
+.problems_list_hover {
+	.problem_item {
+		.heading_wrapper:hover {
+			.item_heading {
+				border-color: #333399;
+			}
+		}	
+	}
+}
+.problems_list_active {
+	.problem_item {
+		.heading_wrapper:active {
+			.item_heading {
+				border-color: #333399;
+			}
+		}	
 	}
 }
 

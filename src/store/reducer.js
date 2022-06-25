@@ -1,17 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {createWrapper, HYDRATE} from 'next-redux-wrapper';
 
 const initialState = {
-	windowObj: null,
-
+	typeUserDevice: null,
+	headerElement: null,
 };
 
 const reducer = createSlice({
 	name: 'reducer',
 	initialState: initialState,
 	reducers: {
-		setWindowObjAction: (state, action) => {
-			state.windowObj = action.payload;
+		setTypeUserDeviceAction: (state, action) => {
+			state.typeUserDevice = action.payload;
+		},
+		setHeaderBarElementAction: (state, action) => {
+			state.headerElement = action.payload;
 		},
 
 	}
@@ -19,4 +21,4 @@ const reducer = createSlice({
 
 export {reducer};
 
-export const {setWindowObjAction} = reducer.actions;
+export const {setTypeUserDeviceAction, setHeaderBarElementAction} = reducer.actions;

@@ -7,8 +7,6 @@ const MAX_CHANGE_COORDINATE_FOR_CANCELLING_CLICK = 3;
 const CHANGE_COORDINATE_AND_WIDTH_PARENT_BLOCK_RATIO = 0.3;
 const TIMEOUT_TRANSFORM_TRANSITION = 300;
 
-const closeButtonSvg = require('./img/close-button.svg');
-
 function debounceFn () {
 	let setTimeoutFn = null;
 	
@@ -73,10 +71,13 @@ export default class Swiper {
 
   #isMouseDownInContentBlock = false;
 
-  #prevCoordinateAxisOXCursorInContentBlock = null;
-  #currentCoordinateAxisOXCursorInContentBlock = null;
-  #currentCoordinateAxisOXMouseDownInContentBlock = null;
-  #currentCoordinateAxisOXMouseUpInContentBlock = null;
+  #prevCoordinateAxisOXPointerInContentBlock = null;
+  #currentCoordinateAxisOXPointerInContentBlock = null;
+  #currentCoordinateAxisOXPointerDownInContentBlock = null;
+  #currentCoordinateAxisOXPointerUpInContentBlock = null;
+
+  #currentTimePointerDownInContentBlock = null;
+  #currentTimePointerUpInContentBlock = null;
 
   #defaultChildCoordinateAxisOX = null;
   #intermediateChildCoordinateAxisOX = null;
@@ -88,6 +89,8 @@ export default class Swiper {
   #arrowChangeTouchStartCoordinate = null;
 
   #swiperBlockResizeHandler = () => {
+	this.#contentWrapper.style.transition = '';
+
 	const parentBlockRect = this.#contentBlock.getBoundingClientRect();
 	const width = parentBlockRect.width;
 	const height = parentBlockRect.height;
@@ -136,6 +139,10 @@ export default class Swiper {
 	this.#contentWrapper.style.transition = 'transform .3s ease-in-out';
 
 	if (targetElement.getAttribute('data-item') === ArrowClickEvent.Forward) {
+		if (this.#currentNumberVisibleElement === this.#elementsCount - ONE_VALUE) {
+			return;
+		}
+
 		this.#arrowLeft.classList.remove(`${styles.arrow_disabled}`);
 		this.#currentNumberVisibleElement += ONE_VALUE;
 
@@ -144,6 +151,10 @@ export default class Swiper {
 		}
 	}
 	if (targetElement.getAttribute('data-item') === ArrowClickEvent.Back) {
+		if (this.#currentNumberVisibleElement === ZERO_VALUE) {
+			return;
+		}
+
 		this.#arrowRight.classList.remove(`${styles.arrow_disabled}`);
 		this.#currentNumberVisibleElement -= ONE_VALUE;
 
@@ -158,7 +169,7 @@ export default class Swiper {
   };
 
   #imageContentClickHandler = (evt) => {
-	const changeCoordinates = Math.abs(this.#currentCoordinateAxisOXMouseDownInContentBlock - this.#currentCoordinateAxisOXMouseUpInContentBlock);
+	const changeCoordinates = Math.abs(this.#currentCoordinateAxisOXPointerDownInContentBlock - this.#currentCoordinateAxisOXPointerUpInContentBlock);
 	
 	if (!evt.target.closest(`.${styles.image}`) || changeCoordinates >= MAX_CHANGE_COORDINATE_FOR_CANCELLING_CLICK || evt.pointerType === 'touch') {
 		return;
@@ -180,7 +191,7 @@ export default class Swiper {
 	document.querySelector('body').removeChild(this.#fullScreenImageBlock);
   };
 
-  #getCurrentCoordinateAxisOXCursor = (evt) => {
+  #setCurrentCoordinateAxisOXCursor = (evt) => {
 	let currentCoordinateCursorAxisOX;
 
 	if (evt.type.startsWith('touch')) {
@@ -193,16 +204,25 @@ export default class Swiper {
 	const cursorCoordinateAxisOXRegardingParentBlock = currentCoordinateCursorAxisOX - currentCoordinateParentBlockAxisOX;
 
 	if (evt.type === 'pointerdown' || evt.type === 'touchstart') {
-		this.#currentCoordinateAxisOXMouseDownInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
+		this.#currentCoordinateAxisOXPointerDownInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
 	}
 	if (evt.type === 'pointerup' || evt.type === 'touchend') {
-		this.#currentCoordinateAxisOXMouseUpInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
+		this.#currentCoordinateAxisOXPointerUpInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
 	}
 	if (evt.type === 'pointermove') {
-		this.#currentCoordinateAxisOXCursorInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
+		this.#currentCoordinateAxisOXPointerInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
 	}
 	if (evt.type === 'pointerdown' && evt.pointerType === 'touch') {
-		this.#currentCoordinateAxisOXCursorInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
+		this.#currentCoordinateAxisOXPointerInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
+	}
+  };
+
+  #setCurrentTimePointerUoAndDown = (evt) => {
+	if (evt.type === 'pointerdown' || evt.type === 'touchstart') {
+		this.#currentTimePointerDownInContentBlock = Date.now();
+	}
+	if (evt.type === 'pointerup' || evt.type === 'touchend') {
+		this.#currentTimePointerUpInContentBlock = Date.now();
 	}
   };
 
@@ -225,36 +245,46 @@ export default class Swiper {
   };
 
   #movingContentWrapperBySwipe = () => {
-		this.#contentWrapper.style.transition = 'transform .3s ease-in-out';
-		const deltaOX = this.#defaultChildCoordinateAxisOX - this.#intermediateChildCoordinateAxisOX;
+	this.#contentWrapper.style.transition = 'transform .3s ease-in-out';
 
-		if (deltaOX > 0 && Math.abs(deltaOX) > CHANGE_COORDINATE_AND_WIDTH_PARENT_BLOCK_RATIO * this.#widthContentBlock) {
-			this.#arrowLeft.classList.remove(`${styles.arrow_disabled}`);
-		        this.#currentNumberVisibleElement += ONE_VALUE;
+	const changeFastMovingTime = this.#currentTimePointerUpInContentBlock - this.#currentTimePointerDownInContentBlock;
+	const deltaOX = this.#currentCoordinateAxisOXPointerDownInContentBlock - this.#currentCoordinateAxisOXPointerUpInContentBlock;
 
-			if (this.#currentNumberVisibleElement === this.#elementsCount - ONE_VALUE) {
-				this.#arrowRight.classList.toggle(`${styles.arrow_disabled}`);
-			}
-		} else if (deltaOX < 0 && Math.abs(deltaOX) > CHANGE_COORDINATE_AND_WIDTH_PARENT_BLOCK_RATIO * this.#widthContentBlock) {
-			this.#arrowRight.classList.remove(`${styles.arrow_disabled}`);
-			this.#currentNumberVisibleElement -= ONE_VALUE;
-
-			if (this.#currentNumberVisibleElement === ZERO_VALUE) {
-				this.#arrowLeft.classList.toggle(`${styles.arrow_disabled}`);
-			}
+	if (changeFastMovingTime < 200 && Math.abs(deltaOX) > 0.05 * this.#widthContentBlock) {
+		if (deltaOX > 0) {
+			this.#arrowRight.click();
+		} 
+		if (deltaOX < 0) {
+			this.#arrowLeft.click();
 		}
 
-		const changeCoordinate = Number(this.#widthContentBlock * this.#currentNumberVisibleElement);
-		this.#contentWrapper.style.transform = `translateX(-${changeCoordinate}px)`;
-		this.#defaultChildCoordinateAxisOX = Number(-changeCoordinate);
 		this.#isMovingContentWrapper = false;
+		return;
+	}
+
+	if (Math.abs(deltaOX) > CHANGE_COORDINATE_AND_WIDTH_PARENT_BLOCK_RATIO * this.#widthContentBlock) {
+		if (deltaOX > 0) {
+			this.#arrowRight.click();
+		} 
+		if (deltaOX < 0) {
+			this.#arrowLeft.click();
+		}
+
+		this.#isMovingContentWrapper = false;
+		return;
+	}
+
+	const changeCoordinate = Number(this.#widthContentBlock * this.#currentNumberVisibleElement);
+	this.#contentWrapper.style.transform = `translateX(-${changeCoordinate}px)`;
+	this.#defaultChildCoordinateAxisOX = Number(-changeCoordinate);
+	this.#isMovingContentWrapper = false;
   };
 
   #contentBlockPointerMoveHandler = (evt) => {
 	this.#isMovingContentWrapper = false;
 
-	this.#prevCoordinateAxisOXCursorInContentBlock = this.#currentCoordinateAxisOXCursorInContentBlock;
-	this.#getCurrentCoordinateAxisOXCursor(evt);
+	this.#prevCoordinateAxisOXPointerInContentBlock = this.#currentCoordinateAxisOXPointerInContentBlock;
+	this.#setCurrentCoordinateAxisOXCursor(evt);
 	
 	const parentWidth = this.#contentBlock.getBoundingClientRect().width;
 	const borderWidthParentBlock = Number(window.getComputedStyle(this.#contentBlock).borderWidth.replace(/px/g, ''));
@@ -269,7 +299,7 @@ export default class Swiper {
 		this.#isMovingContentWrapper = true;
 		this.#isRubberSwipe = false;
 
-		const deltaOX = this.#prevCoordinateAxisOXCursorInContentBlock - this.#currentCoordinateAxisOXCursorInContentBlock;
+		const deltaOX = this.#prevCoordinateAxisOXPointerInContentBlock - this.#currentCoordinateAxisOXPointerInContentBlock;
 
 		let changeCoordinate;
 
@@ -324,28 +354,30 @@ export default class Swiper {
   };
 
   #contentBlockPointerDownHandler = (evt) => {
-	this.#widthCursor = evt.width;
-	this.#heightCursor = evt.height;
-	this.#getCurrentCoordinateAxisOXCursor(evt);
+	this.#setCurrentCoordinateAxisOXCursor(evt);
+	this.#setCurrentTimePointerUoAndDown(evt);
 	this.#isMouseDownInContentBlock = true;
   };
 
   #contentBlockPointerUpHandler = (evt) => {
+	this.#setCurrentCoordinateAxisOXCursor(evt);
+	this.#setCurrentTimePointerUoAndDown(evt);
+
 	if (this.#isRubberSwipe) {
 		this.#rubberSwiper();
 	} else if (this.#isMovingContentWrapper) {
 		this.#movingContentWrapperBySwipe();
 	}
-	this.#getCurrentCoordinateAxisOXCursor(evt);
+
 	this.#isMouseDownInContentBlock = false;
   };
 
   #contentWrapperTouchStartHandler = (evt) => {
-	this.#getCurrentCoordinateAxisOXCursor(evt);
+	this.#setCurrentCoordinateAxisOXCursor(evt);
 };
 
   #contentWrapperTouchEndHandler = (evt) => {
-	this.#getCurrentCoordinateAxisOXCursor(evt);
+	this.#setCurrentCoordinateAxisOXCursor(evt);
 	this.#imageContentClickHandler(evt);
   };
 
@@ -380,7 +412,17 @@ export default class Swiper {
   
 
   constructor (container, data, options) {
-	this.#options = options;
+	this.#options = {
+		nextjs: false,
+
+	};
+	if (options !== undefined) {
+		if (typeof options !== 'object') {
+			throw new Error('Некорректные данные, ожидаются данные типа Object')
+		}
+		this.#options = Object.assign(this.#options, options);
+	}
+	
 	typeof container === 'string' ? (this.#container = document.querySelector(container)) : (this.#container = container);
 	this.#dataArray = data;
 
@@ -388,12 +430,6 @@ export default class Swiper {
 	this.#closeFullScreenImageBlockButton = document.createElement('img');
 	this.#fullScreenImageBlock.setAttribute('class', `${styles.full_screen_block}`);
 	this.#closeFullScreenImageBlockButton.setAttribute('class', `${styles.close_full_screen_button}`);
-
-	if (this.#options !== null && this.#options.nextjs) {
-		this.#closeFullScreenImageBlockButton.setAttribute('src', closeButtonSvg.default.src);
-	} else {
-		this.#closeFullScreenImageBlockButton.setAttribute('src', closeButtonSvg);
-	}
 	this.#closeFullScreenImageBlockButton.setAttribute('alt','Крестик выхода');
 	this.#closeFullScreenImageBlockButton.addEventListener('click', this.#closeFullScreenImageClickHandler);
 
@@ -469,7 +505,5 @@ export default class Swiper {
 
 	
   }
-
-
 
 }
