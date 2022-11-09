@@ -3,8 +3,6 @@
 $reviewsSwiperPaddingHorizontal: 15px;
 
 .block_six_reviews {
-	height: 1080px;
-
 	position: relative;
 }
 
@@ -16,25 +14,51 @@ $reviewsSwiperPaddingHorizontal: 15px;
 
 	display: flex;
 	flex-direction: column;
-
-	border: 2px solid green;
+	gap: 10px;
 }
 
 .reviews_swiper_wrapper {
 	width: 100%;
-	height: 100%;
+	height: 600px;
 
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-
-	border: 2px solid red;
+	// pointer-events: none;
 }
 
 
-@media (max-width: 1919px) {
-	.reviews_swiper {
-		width: 96vw;
+
+@media (min-width: 1280px) and (max-width: 1499px) {
+	
+
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+	
+
+}
+@media (min-width: 864px) and (max-width: 1023px) { // ПЛАНШЕТЫ
+	.reviews_swiper_wrapper {
+		height: 500px;
 	}
+
+}
+@media (min-width: 690px) and (max-width: 863px) { // ПЛАНШЕТЫ
+	.reviews_swiper_wrapper {
+		height: 400px;
+	}
+}
+@media (min-width: 490px) and (max-width: 689px) {
+	.reviews_swiper_wrapper {
+		height: 350px;
+	}
+
+}
+@media (min-width: 390px) and (max-width: 489px) {
+	.reviews_swiper_wrapper {
+		height: 300px;
+	}
+}
+@media (max-width: 389px) {
+	.reviews_swiper_wrapper {
+		height: 300px;
+	}
+
 }

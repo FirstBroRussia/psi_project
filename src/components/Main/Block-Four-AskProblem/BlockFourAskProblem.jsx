@@ -1,41 +1,70 @@
-import React, {useState, useRef} from "react";
-import {useSelector} from 'react-redux';
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import styles from "./BlockFourAskProblem.module.scss";
 
 import plusSvg from "../../../content/image/block-four-ask-problem/plus-icon.svg";
-import { DeviceTypeList } from "../../../utils/utils";
+import {DeviceTypeList} from "../../../utils/utils";
+import {setIsLockScrollAction} from "../../../store/reducer";
+
+import PeriodicMethodsClass from '../../../utils/PeriodicMethods/PeriodicMethods.js';
+
+const TIMEOUT_VALUE = 500;
 
 const videoNull = `#`;
-
 const askProblemsItems = {
   Mood: "mood",
   Target: "target",
   Behavior: "behavior",
   Other: "other"
 };
-
 const videoList = {
   moodVideoHorizontal: require("../../../content/video/help-block/mood-video/compress/mood-horizontal.mp4"),
   moodVideoVertical: require("../../../content/video/help-block/mood-video/compress/mood-vertical.mp4"),
-  targetVideoHorizontal: require('../../../content/video/help-block/target-video/compress/target-horizontal.mp4'),
-  targetVideoVertical: require('../../../content/video/help-block/target-video/compress/target-vertical.mp4'),
-  behaviorVideoHorizontal: require('../../../content/video/help-block/behavior-video/compress/behavior-horizontal.mp4'),
-  behaviorVideoVertical: require('../../../content/video/help-block/behavior-video/compress/behavior-vertical.mp4'),
-  otherVideoHorizontal: require('../../../content/video/help-block/other-video/compress/other-horizontal.mp4'),
-  otherVideoVertical: require('../../../content/video/help-block/other-video/compress/other-vertical.mp4'),
+  targetVideoHorizontal: require("../../../content/video/help-block/target-video/compress/target-horizontal.mp4"),
+  targetVideoVertical: require("../../../content/video/help-block/target-video/compress/target-vertical.mp4"),
+  behaviorVideoHorizontal: require("../../../content/video/help-block/behavior-video/compress/behavior-horizontal.mp4"),
+  behaviorVideoVertical: require("../../../content/video/help-block/behavior-video/compress/behavior-vertical.mp4"),
+  otherVideoHorizontal: require("../../../content/video/help-block/other-video/compress/other-horizontal.mp4"),
+  otherVideoVertical: require("../../../content/video/help-block/other-video/compress/other-vertical.mp4")
 };
 
+let PeriodicMethodsClassInstance = null;
+
 export default function BlockFourAskProblem() {
-  const deviceType = useSelector((state) => state.reducer.typeUserDevice);
+  const dispatch = useDispatch();
+  const deviceType = useSelector(state => state.reducer.typeUserDevice);
+  const widthViewport = useSelector(state => state.reducer.widthViewport);
+  const headerElement = useSelector(state => state.reducer.headerElement);
+
   const currentOpenListRef = useRef(null);
   const [isOpenList, setIsOpenList] = useState(false);
   const [currentVideo, setCurrentVideo] = useState(videoNull);
 
+  const blockFourElementRef = useRef(null);
   const listWrapperRef = useRef(null);
   const listElementRef = useRef(null);
 
-  const askProblemsListClickHandler = evt => {
+  const isFalseLockDocumentScroll = useCallback(() => {
+	dispatch(setIsLockScrollAction(false))
+  }, []);
+
+  const fastPageScrollHandler = useCallback(() => {
+	if (!PeriodicMethodsClassInstance) {
+		return;
+	}
+
+	PeriodicMethodsClassInstance.periodicUpdateTimeRecordData();
+  }, []);
+
+  useEffect(() => {
+	if (!PeriodicMethodsClassInstance) {
+		PeriodicMethodsClassInstance = new PeriodicMethodsClass(isFalseLockDocumentScroll, 100);
+	}
+  }, []);
+
+  
+  const askProblemsListClickHandler = async (evt) => {
     if (!evt.target.closest(`[data-item]`)) {
       return;
     }
@@ -43,41 +72,115 @@ export default function BlockFourAskProblem() {
     const targetElement = evt.target.closest(`[data-item]`);
 
     if (isOpenList) {
-	currentOpenListRef.current.classList.remove(styles.open_item);
-	currentOpenListRef.current = null;
-	setIsOpenList(!isOpenList);
+      currentOpenListRef.current.classList.remove(styles.open_item);
+      currentOpenListRef.current = null;
+      setIsOpenList(!isOpenList);
 
-	return;
+      return;
     }
 
     currentOpenListRef.current = targetElement;
 
-    if (targetElement.closest(`[data-item=${askProblemsItems.Mood}]`)) {
-	targetElement.closest(`[data-item=${askProblemsItems.Mood}]`).classList.add(`${styles.open_item}`);
-	setCurrentVideo(videoList.moodVideoHorizontal);
-    } else if (targetElement.closest(`[data-item=${askProblemsItems.Target}]`)) {
-	targetElement.closest(`[data-item=${askProblemsItems.Target}]`).classList.add(`${styles.open_item}`);
-	setCurrentVideo(videoList.targetVideoHorizontal);
-    } else if (targetElement.closest(`[data-item=${askProblemsItems.Behavior}]`)) {
-	targetElement.closest(`[data-item=${askProblemsItems.Behavior}]`).classList.add(`${styles.open_item}`);
-	setCurrentVideo(videoList.behaviorVideoHorizontal);
-    } else if (targetElement.closest(`[data-item=${askProblemsItems.Other}]`)) {
-	targetElement.closest(`[data-item=${askProblemsItems.Other}]`).classList.add(`${styles.open_item}`);
-	setCurrentVideo(videoList.otherVideoHorizontal);
+    if (widthViewport >= 1024) {
+	if (targetElement.closest(`[data-item=${askProblemsItems.Mood}]`)) {
+		targetElement
+		  .closest(`[data-item=${askProblemsItems.Mood}]`)
+		  .classList.add(`${styles.open_item}`);
+		setCurrentVideo(videoList.moodVideoHorizontal);
+	      } else if (
+		targetElement.closest(`[data-item=${askProblemsItems.Target}]`)
+	      ) {
+		targetElement
+		  .closest(`[data-item=${askProblemsItems.Target}]`)
+		  .classList.add(`${styles.open_item}`);
+		setCurrentVideo(videoList.targetVideoHorizontal);
+	      } else if (
+		targetElement.closest(`[data-item=${askProblemsItems.Behavior}]`)
+	      ) {
+		targetElement
+		  .closest(`[data-item=${askProblemsItems.Behavior}]`)
+		  .classList.add(`${styles.open_item}`);
+		setCurrentVideo(videoList.behaviorVideoHorizontal);
+	      } else if (targetElement.closest(`[data-item=${askProblemsItems.Other}]`)) {
+		targetElement
+		  .closest(`[data-item=${askProblemsItems.Other}]`)
+		  .classList.add(`${styles.open_item}`);
+		setCurrentVideo(videoList.otherVideoHorizontal);
+	      }
+    } else {
+	if (targetElement.closest(`[data-item=${askProblemsItems.Mood}]`)) {
+		targetElement
+		  .closest(`[data-item=${askProblemsItems.Mood}]`)
+		  .classList.add(`${styles.open_item}`);
+		setCurrentVideo(videoList.moodVideoVertical);
+	      } else if (
+		targetElement.closest(`[data-item=${askProblemsItems.Target}]`)
+	      ) {
+		targetElement
+		  .closest(`[data-item=${askProblemsItems.Target}]`)
+		  .classList.add(`${styles.open_item}`);
+		setCurrentVideo(videoList.targetVideoVertical);
+	      } else if (
+		targetElement.closest(`[data-item=${askProblemsItems.Behavior}]`)
+	      ) {
+		targetElement
+		  .closest(`[data-item=${askProblemsItems.Behavior}]`)
+		  .classList.add(`${styles.open_item}`);
+		setCurrentVideo(videoList.behaviorVideoVertical);
+	      } else if (targetElement.closest(`[data-item=${askProblemsItems.Other}]`)) {
+		targetElement
+		  .closest(`[data-item=${askProblemsItems.Other}]`)
+		  .classList.add(`${styles.open_item}`);
+		setCurrentVideo(videoList.otherVideoVertical);
+	      }
     }
 
     setIsOpenList(!isOpenList);
+
+    if (blockFourElementRef.current !== null) {
+		const distanceToTopScreenY = blockFourElementRef.current.getBoundingClientRect().top;
+
+		if (deviceType === 'mobile' || widthViewport < 690) {
+			const deltaPageYAndElementClientY = Math.abs(window.pageYOffset + distanceToTopScreenY);
+			const widthHeaderElement = await new Promise(resolve => resolve(headerElement.getBoundingClientRect().height));
+			window.scrollTo(0, deltaPageYAndElementClientY - widthHeaderElement);
+
+			return;
+		}
+
+		if (distanceToTopScreenY >= 0) {
+		  headerElement.hidden = true;
+		  blockFourElementRef.current.scrollIntoView(true);
+
+		  return;
+		}
+
+		dispatch(setIsLockScrollAction(true));
+		document.addEventListener('scroll', fastPageScrollHandler);
+		blockFourElementRef.current.scrollIntoView(true);
+		// setTimeout(() => {dispatch(setIsLockScrollAction(false))}, TIMEOUT_VALUE);
+    }
   };
 
   return (
-    <article className={`${styles.block_four_ask_problem} gradient_background padding_wrapper`}>
-        <div className={`${styles.block_wrapper} container_wrapper`}>
-          <h2 className="h2">С чем я могу вам помочь</h2>
+    <article
+      ref={blockFourElementRef}
+      className={`${styles.block_four_ask_problem} ${widthViewport < 690 && `${styles.mobile_height}`} gradient_background padding_wrapper`}
+      id="block_four_ask_problem"
+    >
+      <div className="container_wrapper">
+        <h2 className="h2">С чем я могу вам помочь</h2>
+	</div>
+        <div className={`container_wrapper ${styles.block_wrapper}`}>
           <div ref={listWrapperRef} className={styles.problems_list_wrapper}>
             <ul
-	      ref={listElementRef}
+              ref={listElementRef}
               onClick={askProblemsListClickHandler}
-              className={`${styles.problems_list} ${isOpenList ? `${styles.open_list}` : ''} ${deviceType === DeviceTypeList.Desktop ? `${styles.problems_list_hover}` : `${styles.problems_list_active}`}`}
+              className={`${styles.problems_list} ${isOpenList
+                ? `${styles.open_list}`
+                : ""} ${deviceType === DeviceTypeList.Desktop
+                ? `${styles.problems_list_hover}`
+                : `${styles.problems_list_active}`}`}
             >
               <li
                 data-item={askProblemsItems.Mood}
@@ -91,7 +194,7 @@ export default function BlockFourAskProblem() {
                     Проблемы с настроением
                   </h3>
                 </div>
-                <ul className={`${styles.item_description_list} `}> 
+                <ul className={`${styles.item_description_list} `}>
                   <li className={styles.description_list_item}>
                     Регулярное снижение настроения
                   </li>
@@ -194,7 +297,16 @@ export default function BlockFourAskProblem() {
             </ul>
           </div>
         </div>
-      <video src={currentVideo} className={`${styles.video_background} ${isOpenList ? `${styles.visible_video}` : `${styles.hidden_video}`}`} autoPlay loop />
+      <video
+        src={currentVideo}
+        className={`${styles.video_background} ${isOpenList
+          ? `${styles.visible_video}`
+          : `${styles.hidden_video}`}`}
+        autoPlay
+		muted
+        loop
+		playsInline
+      />
     </article>
   );
 }

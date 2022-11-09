@@ -2,89 +2,72 @@ import React from "react";
 
 import styles from "./Sandwich.module.scss";
 
-export default function Sandwich() {
-  return (
-    <svg
-      width="60"
-      height="60"
-      viewBox="0 0 60 60"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M52.5 15H7.5"
-        stroke="#333399"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M52.5 25H7.5"
-        stroke="#333399"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M52.5 35H7.5"
-        stroke="#333399"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M52.5 45H7.5"
-        stroke="#333399"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-
-  return (
-    <svg
-      width="60"
-      height="60"
-      viewBox="0 0 60 60"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g clip-path="url(#clip0_232_2551)">
+export default function Sandwich({ size, type }) {
+  if (type === "open") {
+    return (
+      <svg
+        className={styles.sandwich}
+        width="32"
+        height="32"
+        viewBox="0 0 36 36"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <path
-          d="M55 15H10"
+          d="M33.8198 2.1802L2 34"
           stroke="#333399"
-          stroke-width="4"
-          stroke-linecap="round"
+          strokeWidth="4"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M50 25H5"
+          d="M33.8198 33.8198L2 2"
           stroke="#333399"
-          stroke-width="4"
-          stroke-linecap="round"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  } else if (type === "default") {
+    return (
+      <svg
+        className={styles.sandwich}
+        width="40"
+        height="34"
+        viewBox="0 0 40 34"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M37.5 2H2.5"
+          stroke="#333399"
+          strokeWidth="4"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M50 35H5"
+          d="M37.5 12H2.5"
           stroke="#333399"
-          stroke-width="4"
-          stroke-linecap="round"
+          strokeWidth="4"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M55 45H10"
+          d="M37.5 22H2.5"
           stroke="#333399"
-          stroke-width="4"
-          stroke-linecap="round"
+          strokeWidth="4"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
-      </g>
-      <defs>
-        <clipPath id="clip0_232_2551">
-          <rect width="60" height="60" fill="white" />
-        </clipPath>
-      </defs>
-    </svg>
-  );
+        <path
+          d="M37.5 32H2.5"
+          stroke="#333399"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
 }

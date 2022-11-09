@@ -1,8 +1,6 @@
 export const getOrientationScreen = () => {
-	const widthViewport = window.visualViewport.width;
-
-	const heightViewport = window.visualViewport.height;
-
+	const widthViewport = window.innerWidth;
+	const heightViewport = window.innerHeight;
 	const ratioWidthAndHeight = widthViewport / heightViewport;
 
 	if (ratioWidthAndHeight > 1) {
@@ -10,9 +8,8 @@ export const getOrientationScreen = () => {
 	}
 	if (ratioWidthAndHeight < 1) {
 		return 'portrait';
-	}
-	if (ratioWidthAndHeight === 1) {
+	} else {
 		return 'square';
 	}
-
+	
 };

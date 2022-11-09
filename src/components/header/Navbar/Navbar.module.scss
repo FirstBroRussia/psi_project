@@ -2,39 +2,41 @@
 }
 
 .navigation_list {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-
 	display: flex;
 	align-items: center;
 	gap: 20px;
 }
+
+.navigation_list_mobile {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: flex-end;
+	gap: 20px;
+}
+
 .navigation_list_hover {
 	.navigation_item:hover {
-		height: 45px;
-	border-bottom: 3px solid #333399;
+	        border-bottom: 3px solid #333399;
 	}
 }
 .navigation_list_active {
 	.navigation_item:active {
-		height: 45px;
 		border-bottom: 3px solid #333399;
 	}
 }
 
 .navigation_item {
-	height: 45px;
-
-	font-family: "Montserrat", sans-serif;
-	font-style: normal;
-	font-weight: 400;
-	font-size: 28px;
-	line-height: 34px;
-
-	color: #333399;
+	border-bottom: 3px solid transparent;
 }
 
 .navigation_item:active {
 	opacity: 0.7;
+}
+
+@media (min-width: 864px) and (max-height: 850px) {
+	.nav_link {
+		font-size: calc(28px * 0.75);
+	    line-height: calc(40px * 0.75);
+	}
 }

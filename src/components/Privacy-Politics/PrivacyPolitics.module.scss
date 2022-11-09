@@ -1,0 +1,134 @@
+.privacy_politics_block {
+	max-width: 1920px;
+	width: 100%;
+
+	margin: 0 auto;
+
+	position: relative;
+	z-index: 0;
+
+	background-color: rgba(4, 2, 26, 1);
+	background-image: url("../../content/image/background-image.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center 0;
+	background-attachment: fixed;
+}
+
+.privacy_politics_wrapper {
+	// position: relative;
+
+	padding: 30px 50px;
+
+	display: flex;
+	flex-direction: column;
+	gap: 30px;
+
+	background: rgba(255, 255, 255, 0.5);
+	backdrop-filter: blur(20px);
+}
+
+.page_back_button_wrapper {
+	display: flex;
+	justify-content: start;
+
+	transition: all .5s ease-in-out;
+
+	.page_back_button {
+		width: fit-content;
+		display: flex;
+		gap: 20px;
+		align-items: center;
+	
+		cursor: pointer;
+	}
+
+	.page_back_button__description {
+		font-family: "Oswald";
+		font-style: normal;
+		font-weight: 400;
+		font-size: calc(30px * var(--ratioFontSize));
+		line-height: calc(45px * var(--ratioFontSize));
+		text-transform: uppercase;
+		text-align: center;
+	
+		color: #333399;
+	}
+}
+
+
+.privacy_politics_points {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.h1_heading {
+	font-family: "Oswald";
+	font-style: normal;
+	font-weight: 400;
+	font-size: calc(70px * var(--ratioFontSize) * var(--mainRatio));
+	line-height: calc(105px * var(--ratioFontSize) * var(--mainRatio));
+	text-transform: uppercase;
+	text-align: center;
+
+	color: #333399;
+}
+
+.h2_heading {
+	font-family: "Oswald";
+	font-style: normal;
+	font-weight: 400;
+	font-size: calc(50px * var(--ratioFontSize) * var(--mainRatio));
+	line-height: calc(75px * var(--ratioFontSize) * var(--mainRatio));
+	text-transform: uppercase;
+	// text-align: center;
+
+	color: #333399;
+}
+
+.description,
+.point_description_item {
+	font-family: "Montserrat";
+	font-style: normal;
+	font-weight: 400;
+	font-size: calc(30px * var(--ratioFontSize) * var(--mainRatio));
+	line-height: calc(45px * var(--ratioFontSize) * var(--mainRatio));
+
+	color: #333399;
+}
+
+.description,
+.point_description_list {
+	margin: 0 20px;
+}
+
+.point_description_list {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.point_description_item {
+	margin: 0 15px;
+}
+
+
+.back_arrow_fixed {
+	position: sticky;
+	z-index: 1000000;
+	top: 10px;
+
+	.page_back_button {
+		// backdrop-filter: blur(1px);
+		background-color: rgba(255, 255, 255, 0.3);
+		padding: 10px;
+	}
+}
+
+
+@media (max-width: 689px) {
+	.privacy_politics_wrapper {
+		padding: 20px 10px;
+	}
+}

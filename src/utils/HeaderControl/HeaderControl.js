@@ -8,11 +8,15 @@
 
 import styles from './HeaderControl.module.scss';
 
+import {store} from '../../store/store';
+
 const ONE_VALUE = 1;
 
 
 export default class HeaderControl {
 	#options = null;
+
+	#scrollElement = null;
 
 	#headerElement = null;
 
@@ -20,10 +24,11 @@ export default class HeaderControl {
 
 	#currentCoordinatePageY = null;
 
+
 	constructor (headerElement, options) {
 		this.#options = {
 			fadingHeader: false,
-
+			headerType: null,
 		};
 		if (options !== undefined) {
 			if (typeof options !== 'object') {
@@ -34,15 +39,8 @@ export default class HeaderControl {
 
 		this.#headerElement = headerElement;
 
-		this.#widthViewport = Math.max(
-			document.body.scrollWidth, document.documentElement.scrollWidth,
-			document.body.offsetWidth, document.documentElement.offsetWidth,
-			document.body.clientWidth, document.documentElement.clientWidth
-		);
-
-		this.#currentCoordinatePageY = window.pageYOffset;
-		document.addEventListener('scroll', this.#documentScrollHandler)
-
+		this.#currentCoordinatePageY = window.pageYOffset || window.scrollY;
+		document.addEventListener('scroll', this.#documentScrollHandler);
 	}
 
 	#documentScrollHandler = () => {
@@ -51,22 +49,49 @@ export default class HeaderControl {
 		}
 
 		const deltaCoordinatePageY = window.pageYOffset - this.#currentCoordinatePageY;
-		const currentOpacityHeaderElement = Number(window.getComputedStyle(this.#headerElement).opacity);
-		
-		if (deltaCoordinatePageY > 0) {
-			const opacity = currentOpacityHeaderElement - 0.2;
-			this.#headerElement.style.opacity = opacity;
-			if (opacity <= 0) {
-				this.#headerElement.hidden = true;
-			}
-		} else {
-			if (currentOpacityHeaderElement <= 0) {
-				this.#headerElement.hidden = false;
-			}
-			this.#headerElement.style.opacity = ONE_VALUE;
+
+		const isLockScroll = store.getState().reducer.isLockScroll;
+
+	    // CUSTOM ACTION
+		if (isLockScroll) {
+			return;
+		}
+		//-------
+
+		const widthViewport = store.getState().reducer.widthViewport;
+
+		if (this.#options.headerType === 'mobile' || widthViewport < 690) {
+		    this.#headerElement.hidden && (this.#headerElement.hidden = false);
+			return;
 		}
 
-		this.#currentCoordinatePageY = window.pageYOffset;
+		if (deltaCoordinatePageY > 0) {
+			this.#headerElement.hidden = true;
+		} else {
+			this.#headerElement.hidden = false;
+		}
+
+		this.#currentCoordinatePageY = window.pageYOffset || window.scrollY;
+
+		this.#setHeaderElementBackgroundOpacity();
+	};
+
+	setHeaderType = (type) => {
+		this.#options.headerType = type;
+	};
+
+	#setHeaderElementBackgroundOpacity = () => {
+		if (!store.getState().reducer.blockOneRef) {
+			return;
+		}
+
+		const heightBlockOneElement = store.getState().reducer.blockOneRef.getBoundingClientRect().height;
+		
+		if (this.#currentCoordinatePageY > (heightBlockOneElement - this.#headerElement.getBoundingClientRect().height)) {
+			this.#headerElement.classList.add(styles.background_opacity);
+		} else {
+			this.#headerElement.classList.remove(styles.background_opacity);
+		}
 	};
 }
 

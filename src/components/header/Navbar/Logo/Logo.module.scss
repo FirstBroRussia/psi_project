@@ -1,5 +1,35 @@
-
-
 .logo {
 	width: 100%;
+}
+
+@media (orientation: landscape) and (max-height: 850px) {
+	.logo {
+		height: 65px;
+	}
+}
+
+@media (min-width: 1280px) and (max-width: 1499px) {
+	// .logo {
+	// 	height: 75px;
+	// }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+	.logo {
+		height: 65px;
+	}
+}
+@media (min-width: 864px) and (max-width: 1023px) { // ПЛАНШЕТЫ
+	.logo {
+		height: 55px;
+	}
+}
+@media (min-width: 640px) and (max-width: 863px) { // ПЛАНШЕТЫ
+	.logo {
+		height: 45px;
+	}
+}
+@media (min-width: 400px) and (max-width: 639px) {
+	.logo {
+		height: 35px;
+	}
 }

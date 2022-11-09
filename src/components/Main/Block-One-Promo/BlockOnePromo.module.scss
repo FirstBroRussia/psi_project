@@ -1,5 +1,10 @@
 @import "../../header/Header/Header.module.scss";
 
+:root {
+	--arrowBottom: 70px;
+	--blockOneLocalRatioValue: 1;
+}
+
 .block_one_promo {
 	padding: 0;
 	margin: 0;
@@ -18,14 +23,14 @@
 }
 
 .description {
-	padding: 0;
+	padding: 0 5px;
 	margin: 0;
 
 	font-family: "Playfair Display";
 	font-style: normal;
-	font-weight: 500;
-	font-size: 60px;
-	line-height: 80px;
+	font-weight: 400;
+	font-size: calc(60px * var(--blockOneLocalRatioValue));
+	line-height: calc(90px * var(--blockOneLocalRatioValue));
 	text-align: center;
 	letter-spacing: 0.02em;
 
@@ -35,12 +40,10 @@
 .arrow_wrapper {
 }
 
-$arrowBottom: 70px;
-
 .arrow_link {
 	position: absolute;
 
-	bottom: $arrowBottom;
+	bottom: var(--arrowBottom);
 	left: 50%;
 	transform: translateX(-50%);
 
@@ -60,10 +63,73 @@ $arrowBottom: 70px;
 
 @keyframes arrow_animate {
 	to {
-		bottom: $arrowBottom - 20px;
+		bottom: calc(var(--arrowBottom) - 20px);
 	}
 
 	from {
-		bottom: $arrowBottom;
+		bottom: var(--arrowBottom);
+	}
+}
+
+
+@media (min-width: 1050px) and (max-width: 1600px) and (max-height: 950px) {
+	:root {
+		--arrowBottom: 50px;
+		--blockOneLocalRatioValue: 0.9;
+	}
+}
+@media (min-width: 690px) and (max-width: 1049px) and (max-height: 950px) {
+	:root {
+		--arrowBottom: 40px;
+		--blockOneLocalRatioValue: 0.8;
+	}
+}
+@media (min-width: 690px) and (max-width: 863px) and (max-height: 950px) { // ПЛАНШЕТЫ
+	:root {
+		--arrowBottom: 40px;
+	}
+
+	.block_one_promo {
+		height: 100vh;
+		min-height: 100vh;
+	}
+}
+@media (max-width: 659px) and (max-height: 950px) {
+	.block_one_promo {
+		height: 90vh;
+		min-height: 90vh;
+	}
+}
+
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+	:root {
+		--blockOneLocalRatioValue: 0.9;
+	}
+}
+@media (min-width: 864px) and (max-width: 1023px) { // ПЛАНШЕТЫ
+	
+
+}
+@media (min-width: 690px) and (max-width: 863px) { // ПЛАНШЕТЫ
+	
+
+}
+@media (min-width: 490px) and (max-width: 689px) {
+	:root {
+		--arrowBottom: 50px;
+		--blockOneLocalRatioValue: 0.7;
+	}
+}
+@media (min-width: 390px) and (max-width: 489px) {
+	:root {
+		--arrowBottom: 45px;
+		--blockOneLocalRatioValue: 0.65;
+	}
+}
+@media (max-width: 389px) {
+	:root {
+		--arrowBottom: 40px;
+		--blockOneLocalRatioValue: 0.6;
 	}
 }

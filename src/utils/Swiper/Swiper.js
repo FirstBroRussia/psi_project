@@ -1,20 +1,23 @@
 import styles from './swiper.module.scss';
 
+import {store} from '../../store/store';
+
 const ZERO_VALUE = 0;
 const ONE_VALUE = 1;
 
 const MAX_CHANGE_COORDINATE_FOR_CANCELLING_CLICK = 3;
 const CHANGE_COORDINATE_AND_WIDTH_PARENT_BLOCK_RATIO = 0.3;
-const TIMEOUT_TRANSFORM_TRANSITION = 300;
+const DEBOUNCE_TIME_FREEZE = 50;
+// const TIMEOUT_TRANSFORM_TRANSITION = 300;
 
 function debounceFn () {
 	let setTimeoutFn = null;
 	
-	return (callback) => {
+	return (callback, timeFreeze) => {
 		if (setTimeoutFn !== null) {
 			clearTimeout(setTimeoutFn);
 		}
-		setTimeoutFn = setTimeout(callback, 150);
+		setTimeoutFn = setTimeout(callback, timeFreeze);
 	};
 };
 
@@ -35,11 +38,20 @@ const SideRubberEvents = {
 	Right: 'right',
 };
 
+const TouchEvents = {
+	TouchStart: 'touchstart',
+	TouchMove: 'touchmove',
+	TouchEnd: 'touchend',
+};
+
+
 // Кастомный вид опций для класса Slider, ЭТО ОБЪЕКТ!!!
 const Options = {
 	nextjs : [true, false], // Два значения!!!
 };
 //
+
+
 export default class Swiper {
   #options = null;
 
@@ -72,9 +84,21 @@ export default class Swiper {
   #isMouseDownInContentBlock = false;
 
   #prevCoordinateAxisOXPointerInContentBlock = null;
+  #prevCoordinateAxisOYPointerInContentBlock = null;
   #currentCoordinateAxisOXPointerInContentBlock = null;
+  #currentCoordinateAxisOYPointerInContentBlock = null;
   #currentCoordinateAxisOXPointerDownInContentBlock = null;
+  #currentCoordinateAxisOYPointerDownInContentBlock = null;
   #currentCoordinateAxisOXPointerUpInContentBlock = null;
+  #currentCoordinateAxisOYPointerUpInContentBlock = null;
+
+  #isScrollPage = null;
+  #primaryPrevCoordinateAxisOXPointerInSwiperBlock = null;
+  #primaryPrevCoordinateAxisOYPointerInSwiperBlock = null;
+  #prevCoordinateAxisOXPointerInSwiperBlock = null;
+  #prevCoordinateAxisOYPointerInSwiperBlock = null;
+  #currentCoordinateAxisOXPointerInSwiperBlock = null;
+  #currentCoordinateAxisOYPointerInSwiperBlock = null;
 
   #currentTimePointerDownInContentBlock = null;
   #currentTimePointerUpInContentBlock = null;
@@ -87,6 +111,8 @@ export default class Swiper {
 
   #arrowTouchStartCoordinate = null;
   #arrowChangeTouchStartCoordinate = null;
+
+  #realTimeClickAction = false;
 
   #swiperBlockResizeHandler = () => {
 	this.#contentWrapper.style.transition = '';
@@ -116,14 +142,18 @@ export default class Swiper {
   #renderImageItem = (data) => {
 	const imageElement = document.createElement('img');
 	imageElement.setAttribute('class', `${styles.image}`);
+	imageElement.setAttribute('width', 'auto');
+	imageElement.setAttribute('height', 'auto');
 	imageElement.setAttribute('src', data);
 	imageElement.setAttribute('alt', 'Изображение');
 	imageElement.setAttribute('draggable', 'false');
-
+	
 	const imageWrapper = document.createElement('div');
 	imageWrapper.setAttribute('class', `${styles.image_wrapper}`);
 	const widthParentBlock = this.#contentBlock.getBoundingClientRect().width;
+	const heightParentBlock = this.#contentBlock.getBoundingClientRect().height;
 	imageWrapper.style.width = `${widthParentBlock}px`;
+	imageWrapper.style.height = `${heightParentBlock}px`;
 	imageWrapper.appendChild(imageElement);
 
 	return imageWrapper;
@@ -131,10 +161,10 @@ export default class Swiper {
 
 
   #arrowClickHandler = (evt) => {
-	if (evt.type === 'click' && evt.pointerType === 'touch') {
-		return;
-	}
-
+	// if (evt.type === 'click' && evt.pointerType === 'touch') {
+	// 	return;
+	// }
+		
 	const targetElement = evt.target;
 	this.#contentWrapper.style.transition = 'transform .3s ease-in-out';
 
@@ -166,15 +196,11 @@ export default class Swiper {
 	const changeCoordinate = Number(this.#widthContentBlock * this.#currentNumberVisibleElement);
 	this.#contentWrapper.style.transform = `translateX(-${changeCoordinate}px)`;
 	this.#defaultChildCoordinateAxisOX = Number(-changeCoordinate);
+
+	// setTimeout(() => {this.#realTimeClickAction = false;}, 500);
   };
 
-  #imageContentClickHandler = (evt) => {
-	const changeCoordinates = Math.abs(this.#currentCoordinateAxisOXPointerDownInContentBlock - this.#currentCoordinateAxisOXPointerUpInContentBlock);
-	
-	if (!evt.target.closest(`.${styles.image}`) || changeCoordinates >= MAX_CHANGE_COORDINATE_FOR_CANCELLING_CLICK || evt.pointerType === 'touch') {
-		return;
-	}
-	const targetImageElement = evt.target.closest(`.${styles.image}`);
+  #createFullScreenReviewImage = (targetImageElement) => {
 	const imageElement = document.createElement('img');
 	imageElement.setAttribute('alt', 'Изображение');
 	imageElement.setAttribute('src', `${targetImageElement.getAttribute('src')}`);
@@ -183,37 +209,69 @@ export default class Swiper {
 	this.#fullScreenImageBlock.appendChild(this.#closeFullScreenImageBlockButton);
 	document.querySelector('html').style.overflow = 'hidden';
 	document.querySelector('body').appendChild(this.#fullScreenImageBlock);
+
+	store.getState().reducer.ScrollUpButtonClass.hiddenScrollUpButton();
+  };
+
+  #imageContentClickHandler = (evt) => {
+	if (!this.#options.swipe) {
+		const imageList = evt.target.querySelectorAll(`.${styles.image}`);
+		const targetElement = imageList[this.#currentNumberVisibleElement];
+		this.#createFullScreenReviewImage(targetElement);
+
+		return;
+	}
+
+	const changeCoordinatesOX = Math.abs(this.#currentCoordinateAxisOXPointerDownInContentBlock - this.#currentCoordinateAxisOXPointerUpInContentBlock);
+	const changeCoordinatesOY = Math.abs(this.#currentCoordinateAxisOYPointerDownInContentBlock - this.#currentCoordinateAxisOYPointerUpInContentBlock);
+	
+	if (!evt.target.closest(`.${styles.image}`) || changeCoordinatesOX >= MAX_CHANGE_COORDINATE_FOR_CANCELLING_CLICK || changeCoordinatesOY >= MAX_CHANGE_COORDINATE_FOR_CANCELLING_CLICK || evt.pointerType === 'touch') {
+		return;
+	}
+	const targetImageElement = evt.target.closest(`.${styles.image}`);
+	this.#createFullScreenReviewImage(targetImageElement);
   };
 
   #closeFullScreenImageClickHandler = () => {
 	this.#fullScreenImageBlock.innerHTML = '';
 	document.querySelector('html').style.overflow = 'auto';
 	document.querySelector('body').removeChild(this.#fullScreenImageBlock);
+
+	store.getState().reducer.ScrollUpButtonClass.visibleScrollUpButton();
   };
 
-  #setCurrentCoordinateAxisOXCursor = (evt) => {
+  #setCurrentCoordinateAxisCursor = (evt) => {
 	let currentCoordinateCursorAxisOX;
+	let currentCoordinateCursorAxisOY;
 
 	if (evt.type.startsWith('touch')) {
 		currentCoordinateCursorAxisOX = evt.changedTouches[0].pageX;
+		currentCoordinateCursorAxisOY = evt.changedTouches[0].pageY;
 	} else {
 		currentCoordinateCursorAxisOX = evt.pageX;
+		currentCoordinateCursorAxisOY = evt.pageY;
 	}
 
 	const currentCoordinateParentBlockAxisOX = this.#contentBlock.getBoundingClientRect().left;
+	const currentCoordinateParentBlockAxisOY = this.#contentBlock.getBoundingClientRect().top;
 	const cursorCoordinateAxisOXRegardingParentBlock = currentCoordinateCursorAxisOX - currentCoordinateParentBlockAxisOX;
+	const cursorCoordinateAxisOYRegardingParentBlock = currentCoordinateCursorAxisOY - currentCoordinateParentBlockAxisOY;
 
 	if (evt.type === 'pointerdown' || evt.type === 'touchstart') {
 		this.#currentCoordinateAxisOXPointerDownInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
+		this.#currentCoordinateAxisOYPointerDownInContentBlock = cursorCoordinateAxisOYRegardingParentBlock;
 	}
 	if (evt.type === 'pointerup' || evt.type === 'touchend') {
 		this.#currentCoordinateAxisOXPointerUpInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
+		this.#currentCoordinateAxisOYPointerUpInContentBlock = cursorCoordinateAxisOYRegardingParentBlock;
 	}
 	if (evt.type === 'pointermove') {
 		this.#currentCoordinateAxisOXPointerInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
+		this.#currentCoordinateAxisOYPointerInContentBlock = cursorCoordinateAxisOYRegardingParentBlock;
 	}
 	if (evt.type === 'pointerdown' && evt.pointerType === 'touch') {
 		this.#currentCoordinateAxisOXPointerInContentBlock = cursorCoordinateAxisOXRegardingParentBlock;
+		this.#currentCoordinateAxisOYPointerInContentBlock = cursorCoordinateAxisOYRegardingParentBlock;
 	}
   };
 
@@ -284,7 +342,11 @@ export default class Swiper {
 	this.#isMovingContentWrapper = false;
 
 	this.#prevCoordinateAxisOXPointerInContentBlock = this.#currentCoordinateAxisOXPointerInContentBlock;
-	this.#setCurrentCoordinateAxisOXCursor(evt);
+	this.#setCurrentCoordinateAxisCursor(evt);
+
+	if (!this.#options.swipe) {
+		return;
+	}
 	
 	const parentWidth = this.#contentBlock.getBoundingClientRect().width;
 	const borderWidthParentBlock = Number(window.getComputedStyle(this.#contentBlock).borderWidth.replace(/px/g, ''));
@@ -345,39 +407,43 @@ export default class Swiper {
   };
 
   #contentBlockPointerLeaveHandler = () => {
-	if (this.#isRubberSwipe) {
-		this.#rubberSwiper();
-	} else if (this.#isMovingContentWrapper) {
-		this.#movingContentWrapperBySwipe();
+	if (this.#options.swipe) {
+		if (this.#isRubberSwipe) {
+			this.#rubberSwiper();
+		} else if (this.#isMovingContentWrapper) {
+			this.#movingContentWrapperBySwipe();
+		}
 	}
 	this.#isMouseDownInContentBlock = false;
   };
 
   #contentBlockPointerDownHandler = (evt) => {
-	this.#setCurrentCoordinateAxisOXCursor(evt);
-	this.#setCurrentTimePointerUoAndDown(evt);
+	this.#setCurrentCoordinateAxisCursor(evt);
+	if (this.#options.swipe) {
+		this.#setCurrentTimePointerUoAndDown(evt);
+	}
 	this.#isMouseDownInContentBlock = true;
   };
 
   #contentBlockPointerUpHandler = (evt) => {
-	this.#setCurrentCoordinateAxisOXCursor(evt);
+	this.#setCurrentCoordinateAxisCursor(evt);
 	this.#setCurrentTimePointerUoAndDown(evt);
-
-	if (this.#isRubberSwipe) {
-		this.#rubberSwiper();
-	} else if (this.#isMovingContentWrapper) {
-		this.#movingContentWrapperBySwipe();
+	if (this.#options.swipe) {
+		if (this.#isRubberSwipe) {
+			this.#rubberSwiper();
+		} else if (this.#isMovingContentWrapper) {
+			this.#movingContentWrapperBySwipe();
+		}
 	}
-
 	this.#isMouseDownInContentBlock = false;
   };
 
   #contentWrapperTouchStartHandler = (evt) => {
-	this.#setCurrentCoordinateAxisOXCursor(evt);
+	this.#setCurrentCoordinateAxisCursor(evt);
 };
 
   #contentWrapperTouchEndHandler = (evt) => {
-	this.#setCurrentCoordinateAxisOXCursor(evt);
+	this.#setCurrentCoordinateAxisCursor(evt);
 	this.#imageContentClickHandler(evt);
   };
 
@@ -407,19 +473,116 @@ export default class Swiper {
 		return;
 	}
 
-	this.#arrowClickHandler(evt);
+	debounce(() => {
+		this.#arrowClickHandler(evt)
+	}, DEBOUNCE_TIME_FREEZE);
+  };
+
+  #swiperBlockPointerActionHandler = (evt) => {
+	let pointerClientX;
+	let pointerClientY;
+
+	if (evt.type.startsWith('touch')) {
+		pointerClientX = evt.changedTouches[0].clientX;
+		pointerClientY = evt.changedTouches[0].clientY;
+	} else {
+		pointerClientX = evt.clientX;
+		pointerClientY = evt.clientY;
+	}
+	
+	if (evt.type === 'pointerdown' || evt.type === TouchEvents.TouchStart) {
+		this.#primaryPrevCoordinateAxisOXPointerInSwiperBlock = pointerClientX;
+		this.#primaryPrevCoordinateAxisOYPointerInSwiperBlock = pointerClientY;
+		this.#prevCoordinateAxisOXPointerInSwiperBlock = pointerClientX;
+		this.#prevCoordinateAxisOYPointerInSwiperBlock = pointerClientY;
+		this.#currentCoordinateAxisOXPointerInSwiperBlock = pointerClientX;
+		this.#currentCoordinateAxisOYPointerInSwiperBlock = pointerClientY;
+	} else if (evt.type === TouchEvents.TouchMove || evt.type === 'pointermove') {
+		console.log(pointerClientY - this.#primaryPrevCoordinateAxisOYPointerInSwiperBlock);
+		if (Math.abs(pointerClientY - this.#primaryPrevCoordinateAxisOYPointerInSwiperBlock) > 10 && !this.#isScrollPage) {
+			console.log('AAAAAA-SCROLL');
+			this.#isScrollPage = true;
+			this.#swiperBLock.style.pointerEvents = 'none';
+			window.scroll(0, evt.changedTouches[0].pageY);
+		}
+		return;
+	} else if (evt.type === 'pointerup' || evt.type === TouchEvents.TouchEnd) {
+		console.log(evt.type);
+		this.#isScrollPage = false;
+		this.#contentBlock.style.pointerEvents = 'auto';
+	}
+  };
+
+
+  rerender = (container) => {
+	container.innerHTML = '';
+	this.#container = container;
+	this.#container.appendChild(this.#swiperBLock);
+  };
+
+  destroy = () => {
+	window.removeEventListener('resize', this.#swiperBlockResizeHandler);
+
   };
   
+
+  #primary = null;
+  #prev = null;
+  #current = null;
+
+  #pointerDownHandler = (evt) => {
+	console.log(evt);
+
+	let clientY;
+
+	if (evt.pageY) {
+		clientY = evt.clientY;
+	} else if (evt.changedTouches[0].clientY) {
+		clientY = evt.changedTouches[0].clientY;
+	}
+
+	this.#primary = clientY;
+	this.#prev = clientY;
+  };
+
+  #pointerMoveHandler = (evt) => {
+	console.log(evt);
+
+	let clientY;
+
+	if (evt.clientY) {
+		clientY = evt.clientY;
+	} else if (evt.changedTouches[0].clientY) {
+		clientY = evt.changedTouches[0].clientY;
+	}
+
+	console.log(this.#prev);
+	console.log(clientY);
+
+	const deltaOY = clientY - this.#prev;
+	
+	if (deltaOY > 2) {
+		window.scrollBy(0, deltaOY);
+		this.#prev = clientY;
+	} else if (deltaOY < -2) {
+		window.scrollBy(0, deltaOY);
+		this.#prev = clientY;
+	}
+
+	// this.#prev = screenY;
+  };
 
   constructor (container, data, options) {
 	this.#options = {
 		nextjs: false,
+		swipe: false,
 
 	};
 	if (options !== undefined) {
 		if (typeof options !== 'object') {
 			throw new Error('Некорректные данные, ожидаются данные типа Object')
 		}
+
 		this.#options = Object.assign(this.#options, options);
 	}
 	
@@ -439,35 +602,59 @@ export default class Swiper {
 	this.#container.innerHTML = '';
 	this.#container.append(this.#swiperBLock);
 
+
 	this.#arrowLeft = document.createElement('div');
 	this.#arrowLeft.setAttribute('class', `${styles.arrow_left} ${styles.arrow_disabled}`);
 	this.#arrowLeft.setAttribute('data-item', `${ArrowClickEvent.Back}`);
-	this.#arrowLeft.addEventListener('click', this.#arrowClickHandler);
+	this.#arrowLeft.addEventListener('click', (evt) => {
+		debounce(() => {
+			this.#arrowClickHandler(evt);
+		}, DEBOUNCE_TIME_FREEZE);
+	});
 	this.#arrowLeft.addEventListener('touchstart', this.#arrowTouchStartHandler);
 	this.#arrowLeft.addEventListener('touchmove', this.#arrowTouchMoveHandler);
 	this.#arrowLeft.addEventListener('touchend', this.#arrowTouchEndHandler);
 	this.#swiperBLock.append(this.#arrowLeft);
 
+
 	this.#contentBlock = document.createElement('div');
 	this.#contentBlock.setAttribute('class', `${styles.content_block}`);
+	this.#contentBlock.addEventListener('click', this.#imageContentClickHandler); // ПОЛНОЭКРАННЫЙ ОТЗЫВ КАРТИНКА
 
-	this.#contentBlock.addEventListener('pointermove', this.#contentBlockPointerMoveHandler);
-	this.#contentBlock.addEventListener('pointerdown', this.#contentBlockPointerDownHandler);
-	this.#contentBlock.addEventListener('pointerup', this.#contentBlockPointerUpHandler);
-	this.#contentBlock.addEventListener('pointerleave', this.#contentBlockPointerLeaveHandler);
+	// this.#contentBlock.addEventListener('pointerdown', this.#pointerDownHandler);
+	// this.#contentBlock.addEventListener('touchstart', this.#pointerDownHandler);
+	// this.#contentBlock.addEventListener('pointermove', this.#pointerMoveHandler);
+	// this.#contentBlock.addEventListener('touchmove', this.#pointerMoveHandler);
+
 	this.#swiperBLock.append(this.#contentBlock);
+
 
 	this.#contentWrapper = document.createElement('div');
 	this.#contentWrapper.setAttribute('class', `${styles.content_wrapper}`);
-	this.#contentWrapper.addEventListener('click', this.#imageContentClickHandler);
-	this.#contentWrapper.addEventListener('touchstart', this.#contentWrapperTouchStartHandler);
-	this.#contentWrapper.addEventListener('touchend', this.#contentWrapperTouchEndHandler);
+
+	if (this.#options.swipe) {
+		this.#contentWrapper.addEventListener('touchstart', this.#contentWrapperTouchStartHandler);
+		this.#contentWrapper.addEventListener('touchend', this.#contentWrapperTouchEndHandler);
+
+		this.#contentWrapper.addEventListener('pointermove', this.#contentBlockPointerMoveHandler);
+		this.#contentWrapper.addEventListener('pointerdown', this.#contentBlockPointerDownHandler);
+		this.#contentWrapper.addEventListener('pointerup', this.#contentBlockPointerUpHandler);
+		this.#contentWrapper.addEventListener('pointerleave', this.#contentBlockPointerLeaveHandler);
+	} else {
+		this.#contentWrapper.style.pointerEvents = 'none';
+	}
+
 	this.#contentBlock.append(this.#contentWrapper);
+
 
 	this.#arrowRight = document.createElement('div');
 	this.#arrowRight.setAttribute('class', `${styles.arrow_right}`);
 	this.#arrowRight.setAttribute('data-item', `${ArrowClickEvent.Forward}`);
-	this.#arrowRight.addEventListener('click', this.#arrowClickHandler);
+	this.#arrowRight.addEventListener('click', (evt) => {
+		debounce(() => {
+			this.#arrowClickHandler(evt);
+		}, DEBOUNCE_TIME_FREEZE);
+	});
 	this.#arrowRight.addEventListener('touchstart', this.#arrowTouchStartHandler);
 	this.#arrowRight.addEventListener('touchmove', this.#arrowTouchMoveHandler);
 	this.#arrowRight.addEventListener('touchend', this.#arrowTouchEndHandler);

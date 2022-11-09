@@ -1,33 +1,35 @@
 import React, { useRef, useEffect } from "react";
 
-import Swiper from "../../../utils/Swiper/Swiper.js";
-
 import styles from "./BlockSixReviews.module.scss";
 
+import Swiper from "../../../utils/Swiper/Swiper.js";
+
 const imageObj = {
-  image_1: require("../../../content/image/block-six-reviews/reviews/1-full.jpg"),
-  image_2: require("../../../content/image/block-six-reviews/reviews/2-full.jpg"),
-  image_3: require("../../../content/image/block-six-reviews/reviews/3-full.jpg"),
-  image_4: require("../../../content/image/block-six-reviews/reviews/4-full.jpg")
+	image_1: require("../../../content/image/block-six-reviews/reviews/1-full.jpg"),
+	image_2: require("../../../content/image/block-six-reviews/reviews/2-full.jpg"),
+	image_3: require("../../../content/image/block-six-reviews/reviews/3-full.jpg"),
+	image_4: require("../../../content/image/block-six-reviews/reviews/4-full.jpg")
 };
 
 const imageArray = [
-  require("../../../content/image/block-six-reviews/reviews/1-full.jpg"),
-  require("../../../content/image/block-six-reviews/reviews/2-full.jpg"),
-  require("../../../content/image/block-six-reviews/reviews/3-full.jpg"),
-  require("../../../content/image/block-six-reviews/reviews/4-full.jpg")
+	require("../../../content/image/block-six-reviews/reviews/1-full.jpg"),
+	require("../../../content/image/block-six-reviews/reviews/2-full.jpg"),
+	require("../../../content/image/block-six-reviews/reviews/3-full.jpg"),
+	require("../../../content/image/block-six-reviews/reviews/4-full.jpg")
 ];
 
-let initial = false;
+
+let SwiperClass = null;
 
 export default function BlockSixReviews() {
   const swiperElementRef = useRef(null);
 
   useEffect(() => {
-    if (!initial) {
-      new Swiper(swiperElementRef.current, imageObj);
-      initial = true;
-    }
+	if (!SwiperClass) {
+		SwiperClass = new Swiper(swiperElementRef.current, imageObj);
+	} else {
+		SwiperClass.rerender(swiperElementRef.current);
+	}
   }, []);
 
   return (

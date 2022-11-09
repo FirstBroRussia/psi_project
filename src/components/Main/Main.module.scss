@@ -1,7 +1,45 @@
 .main {
-	
+	transform-origin: center 0;
+
+	// zoom: 0.8;
 }
 
 .wrapper {
 
+}
+
+@media (min-width: 1920px) {
+	// .main {
+	// 	transform: scale(0.8);
+	// }
+}
+@media (max-width: 1920px) and (min-width: 1680px) {
+	// .main {
+	// 	transform: scale(0.8);
+	// }
+}
+@media (max-width: 1679px) and (min-width: 1500px) {
+	// .main {
+	// 	transform: scale(0.8);
+	// }
+}
+@media (min-width: 1280px) and (max-width: 1499px) {
+	// .main {
+	// 	transform: scale(0.8);
+	// }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+	.header {
+		height: 80px;
+	}
+}
+@media (min-width: 864px) and (max-width: 1023px) { // ПЛАНШЕТЫ
+	.header {
+		height: 70px;
+	}
+}
+@media (min-width: 690px) and (max-width: 863px) { // ПЛАНШЕТЫ
+	.header {
+		height: 60px;
+	}
 }

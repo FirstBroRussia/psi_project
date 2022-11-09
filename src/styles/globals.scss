@@ -7,13 +7,18 @@
 
 @font-face {
 	font-family: "Montserrat";
+	src: url("../../public/fonts/montserrat/Montserrat-Light.ttf");
+	font-weight: 300;
+}
+@font-face {
+	font-family: "Montserrat";
 	src: url("../../public/fonts/montserrat/Montserrat-Regular.ttf");
 	font-weight: 400;
 }
 @font-face {
 	font-family: "Montserrat";
-	src: url("../../public/fonts/montserrat/Montserrat-Light.ttf");
-	font-weight: 300;
+	src: url("../../public/fonts/montserrat/Montserrat-Medium.ttf");
+	font-weight: 500;
 }
 @font-face {
 	font-family: "Montserrat";
@@ -24,6 +29,12 @@
 @font-face {
 	font-family: "Oswald";
 	src: url("../../public/fonts/oswald/Oswald.ttf");
+}
+
+:root {
+	--mainRatio: 1;
+	--ratioFontSize: 1;
+	--ratioMobileH2FontSize: 1;
 }
 
 * {
@@ -39,9 +50,8 @@ body {
 		Droid Sans, Helvetica Neue, sans-serif;
 
 	scroll-behavior: smooth;
-
-	position: relative;
 }
+
 
 h1,
 h2,
@@ -57,9 +67,9 @@ p {
 h2 {
 	font-family: "Oswald";
 	font-style: normal;
-	font-weight: 500;
-	font-size: 70px * $ratioFontSize;
-	line-height: 104px;
+	font-weight: 400;
+	font-size: calc(70px * var(--ratioFontSize) * var(--mainRatio)); //
+	line-height: calc(105px * var(--ratioFontSize) * var(--mainRatio)); //
 	text-transform: uppercase;
 
 	color: rgba(255, 255, 255, 0.8);
@@ -68,9 +78,9 @@ h2 {
 h3 {
 	font-family: "Oswald";
 	font-style: normal;
-	font-weight: 500;
-	font-size: 45px * $ratioFontSize;
-	line-height: 67px;
+	font-weight: 400;
+	font-size: calc(45px * var(--ratioFontSize) * var(--mainRatio));
+	line-height:  calc(68px * var(--ratioFontSize) * var(--mainRatio));
 
 	color: #333399;
 }
@@ -79,8 +89,8 @@ h3 {
 	font-family: "Montserrat";
 	font-style: normal;
 	font-weight: 400;
-	font-size: 28px * $ratioFontSize;
-	line-height: 34px;
+	font-size: calc(28px * var(--ratioFontSize));
+	line-height: calc(40px * var(--ratioFontSize));
 
 	color: #333399;
 }
@@ -89,8 +99,8 @@ h3 {
 	font-family: "Montserrat";
 	font-style: normal;
 	font-weight: 400;
-	font-size: 30px * $ratioFontSize;
-	line-height: 37px;
+	font-size: calc(30px * var(--ratioFontSize) * var(--mainRatio));
+	line-height: calc(45px * var(--ratioFontSize) * var(--mainRatio));
 
 	color: #333399;
 }
@@ -99,8 +109,18 @@ h3 {
 	font-family: "Oswald";
 	font-style: normal;
 	font-weight: 500;
-	font-size: 32px * $ratioFontSize;
-	line-height: 47px;
+	font-size: calc(32px * var(--ratioFontSize) * var(--mainRatio));
+	line-height: calc(48px * var(--ratioFontSize) * var(--mainRatio));
+
+	color: #333399;
+}
+
+.p_toggle_price {
+	font-family: "Oswald";
+	font-style: normal;
+	font-weight: 400;
+	font-size: calc(32px * var(--ratioFontSize) * var(--mainRatio));
+	line-height: calc(48px * var(--ratioFontSize) * var(--mainRatio));
 
 	color: #333399;
 }
@@ -114,30 +134,139 @@ a {
 	text-decoration: none;
 }
 
+i, b {
+	background: rgba(216, 216, 110, 0.6);
+}
+
 .display_none {
 	display: none;
 }
 
 .container_wrapper {
-	max-width: 1440px;
-	width: 1440px;
+	// max-width: 1440px;
+	max-width: 1280px;
+	width: 100%;
 
 	margin: 0 auto;
-
-	border: 2px solid green;
 }
 
 .padding_wrapper {
-	padding: $verticalPaddingWrapper $horizontalPaddingWrapper;
+	padding: 40px 15px;
 }
 
 .gradient_background {
 	background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60.97%),
-		linear-gradient(180deg, rgba(0, 0, 0, 0) 77.53%, rgba(0, 0, 0, 0.2) 100%);
+		    linear-gradient(180deg, rgba(0, 0, 0, 0) 77.53%, rgba(0, 0, 0, 0.2) 100%);
 }
 
-@media (max-width: 1439px) {
-	.container_wrapper {
-		width: auto;
+.overflow_hidden {
+	overflow: hidden !important;
+}
+
+@media (min-width: 690px) {
+	:root {
+		--mainRatio: 0.8;
+	}
+}
+
+@media (max-width: 1499px) {
+	.p_navlink {
+		font-size: calc(28px * (var(--ratioFontSize) * 1.15));
+	}
+}
+@media (max-width: 689px) {
+	h2 {
+		text-align: center;
+	}
+}
+
+
+@media (min-width: 1280px) and (max-width: 1499px) {
+	:root {
+		--ratioFontSize: 0.85;
+	}
+
+	.padding_wrapper {
+		padding: 45px 15px;
+	}
+
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+	:root {
+		--ratioFontSize: 0.7;
+	}
+
+	.padding_wrapper {
+		padding: 40px 15px;
+	}
+
+}
+@media (min-width: 864px) and (max-width: 1023px) { // ПЛАНШЕТЫ
+	:root {
+		--ratioFontSize: 0.6;
+	}
+
+	.padding_wrapper {
+		padding: 30px 15px;
+	}
+
+}
+@media (min-width: 690px) and (max-width: 863px) { // ПЛАНШЕТЫ
+	:root {
+		--ratioFontSize: 0.45;
+	}
+
+	.padding_wrapper {
+		padding: 25px 15px;
+	}
+
+}
+@media (min-width: 490px) and (max-width: 689px) {
+	:root {
+		--ratioFontSize: 0.65;
+	}
+
+	.padding_wrapper {
+		padding: 20px 15px;
+	}
+
+	.p_navlink {
+		font-size: 15px;
+	        line-height: 27px;
+	}
+
+}
+@media (min-width: 390px) and (max-width: 489px) {
+	:root {
+		--ratioFontSize: 0.45;
+	}
+
+	.padding_wrapper {
+		padding: 20px 15px;
+	}
+
+	.p_navlink {
+		font-size: 15px;
+	        line-height: 27px;
+	}
+
+}
+@media (max-width: 389px) {
+	:root {
+		--ratioFontSize: 0.30;
+	}
+
+	h2 {
+		font-size: calc(70px * 0.5);
+		line-height: calc(105px * 0.5);
+	}
+
+	.padding_wrapper {
+		padding: 20px 15px;
+	}
+
+	.p_navlink {
+		font-size: 15px;
+	        line-height: 27px;
 	}
 }

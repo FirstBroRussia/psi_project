@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import styles from "./SocialNetworkList.module.scss";
 
@@ -7,15 +7,24 @@ import VkSvg from "../Social-Networks/VkSvg";
 import WhatsAppSvg from "../Social-Networks/WhatsAppSvg";
 
 export default function SocialNetworkList({ width }) {
+	const listRef = useRef(null);
+
 	const linkClickHandler = (evt) => {
 		evt.preventDefault();
 
 		const href = evt.target.closest('a').href;
 		window.open(href, '_blank');
+		
+		// eslint-disable-next-line no-undef
+		console.log(VK.Goal('contact'));
 	};
 
+	useEffect(() => {
+		listRef.current.style.gap = `${width}px`;
+	}, [width]);
+
   return (
-    <ul className={styles.social_networks_list}>
+    <ul id="social_networks_list" ref={listRef} className={`${styles.social_networks_list} social_networks_list`}>
       <li className="social_networks_item">
         <a onClick={linkClickHandler} className="social_network_link" href="http://t.me/tochcasborki" target='_blank' rel="Переход в соцсеть">
           <TelegramSvg width={width} />

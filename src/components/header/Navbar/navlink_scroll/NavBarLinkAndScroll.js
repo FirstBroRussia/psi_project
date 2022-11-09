@@ -11,6 +11,9 @@
 
 import styles from './NavBarLinkAndScroll.module.scss';
 
+import {store} from '../../../../store/store';
+import {setIsOpenMobileMenuAction} from '../../../../store/reducer';
+
 class NavBarLinkAndScroll {
 	#options = null;
 
@@ -20,10 +23,12 @@ class NavBarLinkAndScroll {
 	#headerElement = null;
 	#heightHeaderElement = null;
 
-	constructor (navBarElement, navLinkClassSelector, headerElement, options) {
+	#headerElementRefMutationObserver = null;
+
+	constructor (navBarElement, navLinkClassSelector, options) {
 		this.#options = {
 			fadingHeader: false,
-
+			navbarType: null,
 		};
 		if (options !== undefined) {
 			if (typeof options !== 'object') {
@@ -35,40 +40,61 @@ class NavBarLinkAndScroll {
 		this.#navBarElement = navBarElement;
 		this.#definingSelectorForNavLink = navLinkClassSelector;
 		document.addEventListener('click', this.#navLinkClickHandler);
-
-		this.#headerElement = headerElement;
-		this.#heightHeaderElement = this.#headerElement.getBoundingClientRect().height;
-
 	}
 
-	#navLinkClickHandler = (evt) => {
+	setHeaderElement = (headerElement) => {
+		if (headerElement) {
+		  this.#headerElement = headerElement;
+		} else {
+		  this.#headerElement = store.getState().reducer.headerElement;
+		}
+
+		this.#heightHeaderElement = this.#headerElement.getBoundingClientRect().height;
+	};
+
+
+	#navLinkClickHandler = async (evt) => {
 		evt.preventDefault();
+		
+		if (!this.#headerElement) {
+			this.setHeaderElement();
+		}
+
 		const targetElement = evt.target;
 
 		if (!targetElement.closest(`.${this.#definingSelectorForNavLink}`)) {
 			return;
 		}
 
-		const anchorHref = targetElement.href;
-		const anchorId = anchorHref.slice(anchorHref.indexOf('/#') + 2);
-		const elementById = document.querySelector(`#${anchorId}`);
+		const anchorHref = targetElement.getAttribute('href');
+		const elementById = document.querySelector(`${anchorHref}`);
 
-		const deltaPageYAndElementClientY = Math.abs(window.pageYOffset + elementById.getBoundingClientRect().top);
+		const distanceToTopScreenY = elementById.getBoundingClientRect().top;
+		const deltaPageYAndElementClientY = Math.abs(window.pageYOffset + distanceToTopScreenY);
+		
+		const widthViewport = store.getState().reducer.widthViewport;
 
-		if (this.#options.fadingHeader === true) {
-			const distanceToTopScreenY = elementById.getBoundingClientRect().top;
+		if (this.#options.navbarType === 'mobile' || widthViewport < 690) {
+		  await store.dispatch(setIsOpenMobileMenuAction(false));
+		  await new Promise (resolve => setTimeout(() => resolve(this.#heightHeaderElement = this.#headerElement.getBoundingClientRect().height), 0));
+		  window.scrollTo(0, deltaPageYAndElementClientY - this.#heightHeaderElement);
+			
+		  return;
+		}
 
-			if (distanceToTopScreenY < 0) {
-				window.scrollTo(0, deltaPageYAndElementClientY - this.#heightHeaderElement);
-			} else {
-				window.scrollTo(0, deltaPageYAndElementClientY);
-			}
-		} else if (this.#options.fadingHeader === false) {
+		this.#headerElement.hidden && (this.#headerElement.hidden = false);
+		await new Promise (resolve => setTimeout(() => resolve(this.#heightHeaderElement = this.#headerElement.getBoundingClientRect().height), 0));
+
+		if (distanceToTopScreenY < 0) {
 			window.scrollTo(0, deltaPageYAndElementClientY - this.#heightHeaderElement);
-		}	
+		} else {
+			window.scrollTo(0, deltaPageYAndElementClientY);
+		}
 	};
 
-
+	setNavbarType = (navbarType) => {
+		this.#options.navbarType = navbarType;
+	};
 }
 
 export {NavBarLinkAndScroll};

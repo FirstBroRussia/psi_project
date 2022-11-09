@@ -6,10 +6,11 @@ import { store } from './store/store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import './utils/utils.js';
-
 import './styles/normalize.scss';
 import './styles/globals.scss';
+
+import './utils/utils.js';
+import './utils/primaryAction.js';
 
 
 const container = document.getElementById('root');
